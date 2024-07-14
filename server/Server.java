@@ -2,6 +2,9 @@ import java.net.*;
 
 public class Server {
 
+    public static byte[][] byteStorage = new byte[10][];
+    public static String[] nameStorage = new String[10];
+    public static int currentCapacity = 0;
     public static void main(String[] args) {
         int port = 4000; // Can be changed
 

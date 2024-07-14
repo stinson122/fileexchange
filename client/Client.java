@@ -19,7 +19,7 @@ public class Client {
             System.out.print("> ");
             msg = sc.nextLine();
 
-            tempString = msg.split(" "); //parse string and /command given
+            tempString = msg.split(" "); //parse string to get command
             command = tempString[0];
 
             if (command.equals("/join")) {
@@ -32,12 +32,16 @@ public class Client {
                     System.out.println("Please enter server details");
                 } catch (ConnectException e) {
                     System.out.println("Invalid server details");
+                } catch (UnknownHostException e) {
+                    System.out.println("Invalid server details");
                 } catch (Exception e) {
                     e.printStackTrace();
                     break;
                 }
             } else if (command.equals("/leave")) {
                 break;
+            } else if (command.equals("/?")) {
+                System.out.println("/join <server_ip_address> <port> \n/leave \n/register <handle> \n/store <filename> \n/dir \n/get <filename>");
             } else {
                 System.out.println("Invalid Command");
             }
@@ -76,6 +80,7 @@ public class Client {
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.out.println("Please enter file path of file");
                         }
+
                     } else if (command.equals("/get")) {
                         File tempFile = new File(tempString[1]);
                         String filePath = tempFile.getCanonicalPath();
@@ -84,21 +89,37 @@ public class Client {
 
                         writer.writeUTF(msg);
                         System.out.println(reader.readUTF());
+
                     } else if (command.equals("/leave")) {
                         break;
+
+                    } else if (command.equals("/dir")) {
+                        msg = "/dir";
+                        writer.writeUTF(msg);
+                        System.out.println(reader.readUTF());
+
+                    } else if (command.equals("/register")) { //TODO: register command
+                        System.out.println("/register WIP");
+
+                    } else if (command.equals("/?")) {
+                        msg = "/?";
+                        writer.writeUTF(msg);
+                        System.out.println(reader.readUTF());
+
                     } else {
                         System.out.println("Invalid Command");
                     }
                 }
     
                 writer.writeUTF("END");
-    
-                System.out.println("Client: has terminated connection");
-    
+
+                sc.close();
                 endpoint.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
+            System.out.println("Client: has terminated connection");
         }
         
     }
