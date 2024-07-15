@@ -68,12 +68,18 @@ public class Client {
                         try {
                             File tempFile = new File(tempString[1]);
                             if (tempFile.isFile()) {
-                                String filePath = tempFile.getCanonicalPath();
-
-                                msg = command + " " + filePath;
+                                msg = command + " " + tempString[1];
 
                                 writer.writeUTF(msg);
+
+                                DataInputStream dis = new DataInputStream(new FileInputStream(tempString[1]));
+                                
+                                byte[] filebyte = new byte[2048];
+                                int file = dis.read(filebyte, 0, filebyte.length);
+                                writer.write(filebyte, 0, file);                                
+		
                                 System.out.println(reader.readUTF());
+                                dis.close();
                             } else {
                                 System.out.println("Invalid File");
                             }
@@ -81,14 +87,19 @@ public class Client {
                             System.out.println("Please enter file path of file");
                         }
 
-                    } else if (command.equals("/get")) {
-                        File tempFile = new File(tempString[1]);
-                        String filePath = tempFile.getCanonicalPath();
-
-                        msg = command + " " + filePath;
-
+                    } else if (command.equals("/get")) {                        
+                        msg = command + " " + tempString[1];
+                        System.out.println("FILENAME: " + tempString[1]);
                         writer.writeUTF(msg);
-                        System.out.println(reader.readUTF());
+
+                        DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempString[1]));
+
+		                byte[] filebyte = new byte[2048];
+                        int file = reader.read(filebyte, 0, filebyte.length);
+                        dos.write(filebyte, 0, file);                    
+
+                        writer.writeUTF("File '" + tempString[1] + "' sent successfully");
+                        dos.close();
 
                     } else if (command.equals("/leave")) {
                         break;

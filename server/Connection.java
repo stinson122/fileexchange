@@ -32,47 +32,43 @@ public class Connection extends Thread {
 
                     if (command.equals("/store")) {
 
-                        i = Server.currentCapacity;
+                        System.out.println("FILENAME: " + parameter);
 
-                        Server.byteStorage[i] = Files.readAllBytes(Paths.get(parameter)); //assign first byte storage slot to given file
-                        Server.nameStorage[i] = Paths.get(parameter).getFileName().toString(); //add filename to storage
-                        System.out.println("FILENAME: " + Server.nameStorage[i]);
-                        Server.currentCapacity = Server.currentCapacity + 1;
+                        DataOutputStream dos = new DataOutputStream(new FileOutputStream(parameter));
+                        
+		                byte[] filebyte = new byte[2048];
+                        int file = reader.read(filebyte, 0, filebyte.length);
+                        dos.write(filebyte, 0, file);
+                    
 
-                        writer.writeUTF("File '" + Server.nameStorage[i] + "' stored successfully");
-
+                        writer.writeUTF("File '" + parameter + "' stored successfully");
+                        dos.close();
                     } else if (command.equals("/get")) {
-
-                        String filename = Paths.get(parameter).getFileName().toString();
-
-                        i = Arrays.asList(Server.nameStorage).indexOf(filename);
-
-                        if (i != -1) {
-                            InputStream in = new ByteArrayInputStream(Server.byteStorage[i]); //add stored bytes to input stream
-                            FileOutputStream out = new FileOutputStream(Server.nameStorage[i]); //output bytes to file of stored file name
-
-                            int count;
-                            byte[] buffer = new byte[2048];
-                            while((count = in.read(buffer)) > 0) {
-                                out.write(buffer, 0, count);
-                            }
-
-                            writer.writeUTF("File retrieved successfully");
-                            out.close();
+                        File tempFile = new File(parameter);
+                        if (tempFile.isFile()) {
+                            DataInputStream dis = new DataInputStream(new FileInputStream(parameter));
+                            
+                            byte[] filebyte = new byte[2048];
+                            int file = dis.read(filebyte, 0, filebyte.length);
+                            writer.write(filebyte, 0, file);                                
+    
+                            System.out.println(reader.readUTF());
+                            dis.close();
                         } else {
-                            writer.writeUTF("File does not exist in storage");
+                            System.out.println("File does not exist in storage");
                         }
                     }
                 } catch (ArrayIndexOutOfBoundsException e) { // if a command without parameters is given, i.e. /dir and /?, this exception occurs at line 29 when trying to get a parameter, so the no parameter commands go here
                     String command = tempString[0];
 
                     if (command.equals("/dir")) {
+                        /*
                         if (Server.nameStorage[0] == null) {
                             writer.writeUTF("No files found in directory");
                         } else {
                             String directory = Stream.of(Server.nameStorage).filter(s -> s != null && !s.isEmpty()).collect(Collectors.joining("\n"));
                             writer.writeUTF(directory);
-                        }
+                        }*/
                     } else if (command.equals("/?")) {
                         String commands = "/join <server_ip_address> <port> \n/leave \n/register <handle> \n/store <filename> \n/dir \n/get <filename>";
                         writer.writeUTF(commands);
