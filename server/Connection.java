@@ -18,8 +18,10 @@ public class Connection extends Thread {
     public void run() {
         try {
             String msg;
+            String workingDir = System.getProperty("user.dir");
             DataInputStream reader = new DataInputStream(s.getInputStream());
             DataOutputStream writer = new DataOutputStream(s.getOutputStream());
+            int byteCapacity = 24000;
 
             while (!(msg = reader.readUTF()).equals("END")) {
                 String[] tempString = msg.split(" "); //parse string given to command and file
@@ -31,12 +33,12 @@ public class Connection extends Thread {
                     // System.out.println(filepath);
 
                     if (command.equals("/store")) {
-
+                        System.out.println("User <"+tempString[2] + "> is sending file.");
                         System.out.println("FILENAME: " + parameter);
+                        File tempFile = new File(workingDir+"/files",tempString[1]);
+                        DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempFile));
 
-                        DataOutputStream dos = new DataOutputStream(new FileOutputStream(parameter));
-                        
-		                byte[] filebyte = new byte[2048];
+		                byte[] filebyte = new byte[byteCapacity];
                         int file = reader.read(filebyte, 0, filebyte.length);
                         dos.write(filebyte, 0, file);
                     
@@ -44,17 +46,21 @@ public class Connection extends Thread {
                         writer.writeUTF("File '" + parameter + "' stored successfully");
                         dos.close();
                     } else if (command.equals("/get")) {
-                        File tempFile = new File(parameter);
+                        System.out.println("FILENAME: " + parameter);
+                        File tempFile = new File(workingDir+"/files",parameter);
+
                         if (tempFile.isFile()) {
-                            DataInputStream dis = new DataInputStream(new FileInputStream(parameter));
+                            writer.writeUTF("File received");
+                            DataInputStream dis = new DataInputStream(new FileInputStream(tempFile));
                             
-                            byte[] filebyte = new byte[2048];
+                            byte[] filebyte = new byte[byteCapacity];
                             int file = dis.read(filebyte, 0, filebyte.length);
-                            writer.write(filebyte, 0, file);                                
+                            writer.write(filebyte, 0, file); 
     
                             System.out.println(reader.readUTF());
                             dis.close();
                         } else {
+                            writer.writeUTF("File does not exist in storage");
                             System.out.println("File does not exist in storage");
                         }
                     }
@@ -62,13 +68,17 @@ public class Connection extends Thread {
                     String command = tempString[0];
 
                     if (command.equals("/dir")) {
-                        /*
-                        if (Server.nameStorage[0] == null) {
+                        File directoryPath = new File(workingDir+"/files");
+                        File[] files =  directoryPath.listFiles();
+                        if (files == null) {
                             writer.writeUTF("No files found in directory");
                         } else {
-                            String directory = Stream.of(Server.nameStorage).filter(s -> s != null && !s.isEmpty()).collect(Collectors.joining("\n"));
-                            writer.writeUTF(directory);
-                        }*/
+                            String fileNames = "";
+                            for (int i=0;i<files.length;i++) { 
+                                fileNames += files[i].getName()+"\n";
+                              } 
+                            writer.writeUTF(fileNames);
+                        }
                     } else if (command.equals("/?")) {
                         String commands = "/join <server_ip_address> <port> \n/leave \n/register <handle> \n/store <filename> \n/dir \n/get <filename>";
                         writer.writeUTF(commands);
