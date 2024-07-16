@@ -14,7 +14,7 @@ public class Client {
         Socket endpoint = null;
         String workingDir = System.getProperty("user.dir");
 
-        int byteCapacity = 4000;
+        int byteCapacity = 24000;
         Scanner sc = new Scanner(System.in);
         String msg;
         Boolean flag = false;
@@ -45,7 +45,7 @@ public class Client {
             } else if (command.equals("/leave")) {
                 break;
             } else if (command.equals("/?")) {
-                System.out.println("/join <server_ip_address> <port> \n/leave \n/register <handle> \n/store <filename> \n/dir \n/get <filename>");
+                System.out.println("/join <server_ip_address> <port> \n/leave");
             } else {
                 System.out.println("Invalid Command");
             }
@@ -139,6 +139,8 @@ public class Client {
 
                 sc.close();
                 endpoint.close();
+            } catch (SocketException e) {
+                System.out.println("Server has stopped");
             } catch (Exception e) {
                 e.printStackTrace();
             }
