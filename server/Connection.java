@@ -63,6 +63,16 @@ public class Connection extends Thread {
                             writer.writeUTF("File does not exist in storage");
                             System.out.println("File does not exist in storage");
                         }
+                    } else if (command.equals("/register")){
+                        String username = tempString[1];
+                        if(username != null){
+                            //System.out.println(username);
+                            writer.writeUTF("Welcome " + username);
+                            System.out.println("Welcome " + username);
+                        } else if (tempString.length < 2) {
+                            writer.writeUTF("Error: Unsuccessful registration, incorrect syntax.");
+                            System.out.println("Error: Unsuccessful registration, incorrect syntax.");
+                        }
                     }
                 } catch (ArrayIndexOutOfBoundsException e) { // if a command without parameters is given, i.e. /dir and /?, this exception occurs at line 29 when trying to get a parameter, so the no parameter commands go here
                     String command = tempString[0];
@@ -89,7 +99,7 @@ public class Connection extends Thread {
             s.close();
             
         } catch (Exception e) {
-            // e.printStackTrace(); uncomment for debugging
+            e.printStackTrace(); //uncomment for debugging
         } finally {
             System.out.println("Server: Client " + s.getRemoteSocketAddress() + " has disconnected");
         }

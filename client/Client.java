@@ -18,11 +18,11 @@ public class Client {
         Scanner sc = new Scanner(System.in);
         String msg;
         Boolean flag = false;
+        String clientName = null;
 
         while (!flag) {
             System.out.print("> ");
             msg = sc.nextLine();
-
             tempString = msg.split(" "); //parse string to get command
             command = tempString[0];
 
@@ -52,10 +52,7 @@ public class Client {
         }
 
         if (flag) {
-            
             try {
-    
-                System.out.println("Client: Has connected to server " + host + ":" + port);
     
                 DataOutputStream writer = new DataOutputStream(endpoint.getOutputStream());
                 DataInputStream reader = new DataInputStream(endpoint.getInputStream());
@@ -122,8 +119,21 @@ public class Client {
                         writer.writeUTF(msg);
                         System.out.println(reader.readUTF());
 
-                    } else if (command.equals("/register")) { //TODO: register command
-                        System.out.println("/register WIP");
+                    } else if (command.equals("/register")) {
+                        try {
+                            String username = tempString[1];
+                            msg = command + " " + username;
+                            writer.writeUTF(msg);
+                            String response = reader.readUTF();
+                            System.out.println(response);
+                           if(response.startsWith("Welcome")) {
+                                clientName = username;
+                                System.out.println(clientName + ": Has connected to server " + host + ":" + port);
+                            }
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            System.out.println("Please enter a username");
+                        }
+                        
 
                     } else if (command.equals("/?")) {
                         msg = "/?";
@@ -145,7 +155,7 @@ public class Client {
                 e.printStackTrace();
             }
             
-            System.out.println("Client: has terminated connection");
+            System.out.println(clientName + ": has terminated connection");
         }
         
     }
