@@ -1,13 +1,14 @@
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 public class Connection extends Thread {
 
     private Socket s;
+    private static HashSet<String> users = new HashSet<String>();
     int i = 0;
 
     public Connection(Socket s) {
@@ -65,13 +66,21 @@ public class Connection extends Thread {
                         }
                     } else if (command.equals("/register")){
                         String username = tempString[1];
-                        if(username != null){
-                            //System.out.println(username);
-                            writer.writeUTF("Welcome " + username);
-                            System.out.println("Welcome " + username);
-                        } else if (tempString.length < 2) {
-                            writer.writeUTF("Error: Unsuccessful registration, incorrect syntax.");
-                            System.out.println("Error: Unsuccessful registration, incorrect syntax.");
+                        synchronized(users) {
+                            if(username != null){
+                                if (users.contains(username)) {
+                                    writer.writeUTF("Error: Registration failed. Handle or alias already exists.");
+                                    System.out.println("Error: Registration failed. Handle or alias already exists.");
+                                } else {
+                                    users.add(username);
+                                    writer.writeUTF("Welcome " + username + "!");
+                                    System.out.println("Welcome " + username + "!");
+                                }
+                                
+                            } else if (tempString.length < 2) {
+                                writer.writeUTF("Error: Unsuccessful registration, incorrect syntax.");
+                                System.out.println("Error: Unsuccessful registration, incorrect syntax.");
+                            }
                         }
                     }
                 } catch (ArrayIndexOutOfBoundsException e) { // if a command without parameters is given, i.e. /dir and /?, this exception occurs at line 29 when trying to get a parameter, so the no parameter commands go here

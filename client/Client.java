@@ -128,7 +128,7 @@ public class Client {
                             System.out.println(response);
                            if(response.startsWith("Welcome")) {
                                 clientName = username;
-                                System.out.println(clientName + ": Has connected to server " + host + ":" + port);
+                                System.out.println(clientName + " has connected to server " + host + ":" + port);
                             }
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.out.println("Please enter a username");
@@ -155,7 +155,7 @@ public class Client {
                 e.printStackTrace();
             }
             
-            System.out.println(clientName + ": has terminated connection");
+            System.out.println(clientName + " has terminated connection");
         }
         
     }
