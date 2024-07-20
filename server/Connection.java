@@ -42,9 +42,7 @@ public class Connection extends Thread {
 		                byte[] filebyte = new byte[byteCapacity];
                         int file = reader.read(filebyte, 0, filebyte.length);
                         dos.write(filebyte, 0, file);
-                    
 
-                        writer.writeUTF("File '" + parameter + "' stored successfully");
                         dos.close();
                     } else if (command.equals("/get")) {
                         System.out.println("FILENAME: " + parameter);
@@ -61,8 +59,8 @@ public class Connection extends Thread {
                             System.out.println(reader.readUTF());
                             dis.close();
                         } else {
-                            writer.writeUTF("File does not exist in storage");
-                            System.out.println("File does not exist in storage");
+                            writer.writeUTF("Error: File not found in the server");
+                            System.out.println("Error: File not found in the server");
                         }
                     } else if (command.equals("/register")){
                         String username = tempString[1];
@@ -78,8 +76,8 @@ public class Connection extends Thread {
                                 }
                                 
                             } else if (tempString.length < 2) {
-                                writer.writeUTF("Error: Unsuccessful registration, incorrect syntax.");
-                                System.out.println("Error: Unsuccessful registration, incorrect syntax.");
+                                writer.writeUTF("Error: Command not found.");
+                                System.out.println("Error: Command not found.");
                             }
                         }
                     }

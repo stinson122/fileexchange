@@ -32,22 +32,28 @@ public class Client {
                     port = Integer.parseInt(tempString[2]);
                     endpoint = new Socket(host, port);
                     flag = true;
+                    System.out.println("Connection to the File Exchange Server is successful!");
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    System.out.println("Please enter server details");
+                    System.out.println("Error: Command parameters do not match or is not allowed.");
                 } catch (ConnectException e) {
-                    System.out.println("Invalid server details");
+                    System.out.println("Error: Connection to the Server has failed! Please check IP Address and Port Number.");
                 } catch (UnknownHostException e) {
-                    System.out.println("Invalid server details");
+                    System.out.println("Error: Command not found.");
                 } catch (Exception e) {
                     e.printStackTrace();
                     break;
                 }
             } else if (command.equals("/leave")) {
-                break;
+                if(!flag) {
+                    System.out.println("Error: Disconnection failed. Please connect to the server first.");
+                } else {
+                    break;
+                }
+                
             } else if (command.equals("/?")) {
                 System.out.println("/join <server_ip_address> <port> \n/leave");
             } else {
-                System.out.println("Invalid Command");
+                System.out.println("Error: Command not found.");
             }
         }
 
@@ -65,7 +71,7 @@ public class Client {
                     tempString = msg.split(" ");
                     command = tempString[0];
 
-                    if ((command.equals("/store"))) {
+                    if ((command.equals("/store"))) { 
                         try {
                             File tempFile = new File(workingDir+"/files",tempString[1]);
                             if (tempFile.isFile()) {
@@ -80,23 +86,22 @@ public class Client {
                                 int file = dis.read(filebyte, 0, filebyte.length);
                                 writer.write(filebyte, 0, file);                                
 		
-                                System.out.println(reader.readUTF());
+                                System.out.println(clientName + "<" + timeStamp + ">" + ": Uploaded " + tempString[1]);
                                 dis.close();
                             } else {
-                                System.out.println("Invalid File");
+                                System.out.println("Error: File not found.");
                             }
                         } catch (ArrayIndexOutOfBoundsException e) {
-                           System.out.println("Please enter file path of file");
+                           System.out.println("Error: Command parameters do not match or is not allowed.");
                         }
 
-                    } else if (command.equals("/get")) {
+                    } else if (command.equals("/get")) { 
                         try {                      
                             msg = command + " " + tempString[1];
                             writer.writeUTF(msg);
 
                             String reply = reader.readUTF();
                             if (reply.equals("File received")) {
-                                System.out.println("FILENAME: " + tempString[1]);
                                 File tempFile = new File(workingDir+"/files",tempString[1]);
                                 DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempFile));
 
@@ -104,10 +109,11 @@ public class Client {
                                 int file = reader.read(filebyte, 0, filebyte.length);
                                 dos.write(filebyte, 0, file);     
                                 writer.writeUTF("File '" + tempString[1] + "' sent successfully"); 
-
+                                System.out.println("File received form Server: " + tempString[1]);
                                 dos.close();
+                            } else {
+                                System.out.println("Error: File not found in the server.");
                             }             
-                            System.out.println(reply);
                         } catch (ArrayIndexOutOfBoundsException e)  {
                             System.out.println("Please enter file path of file");
                         }
@@ -117,7 +123,9 @@ public class Client {
                     } else if (command.equals("/dir")) {
                         msg = "/dir";
                         writer.writeUTF(msg);
+                        System.out.println("Server Directory");
                         System.out.println(reader.readUTF());
+                        
 
                     } else if (command.equals("/register")) {
                         try {
@@ -128,10 +136,9 @@ public class Client {
                             System.out.println(response);
                            if(response.startsWith("Welcome")) {
                                 clientName = username;
-                                System.out.println(clientName + " has connected to server " + host + ":" + port);
                             }
                         } catch (ArrayIndexOutOfBoundsException e) {
-                            System.out.println("Please enter a username");
+                            System.out.println("Error: Command parameters do not match or is not allowed."); 
                         }
                         
 
@@ -141,7 +148,7 @@ public class Client {
                         System.out.println(reader.readUTF());
 
                     } else {
-                        System.out.println("Invalid Command");
+                        System.out.println("Error: Command not found.");
                     }
                 }
     
@@ -155,7 +162,7 @@ public class Client {
                 e.printStackTrace();
             }
             
-            System.out.println(clientName + " has terminated connection");
+            System.out.println("Connection closed. Thank you!");
         }
         
     }
