@@ -13,6 +13,7 @@ public class Client {
     String command = "";
     Socket endpoint = null;
     String workingDir = System.getProperty("user.dir");
+    String filesDir = "";
 
     int byteCapacity = 24000;
     Scanner sc = new Scanner(System.in);
@@ -84,6 +85,8 @@ public class Client {
               System.out.println(response);
               if (response.startsWith("Welcome")) {
                 clientName = username;
+                filesDir = workingDir + "/" + clientName + "/files";
+                new File(filesDir).mkdirs();
               }
             } catch (ArrayIndexOutOfBoundsException e) {
               System.out.println("Error: Command parameters do not match or is not allowed.");
@@ -98,7 +101,7 @@ public class Client {
 
             if ((command.equals("/store"))) {
               try {
-                File tempFile = new File(workingDir + "/files", tempString[1]);
+                File tempFile = new File(filesDir, tempString[1]);
                 if (tempFile.isFile()) {
                   msg = command + " " + (tempString[1]);
                   String timeStamp = ZonedDateTime.now(ZoneId.of("Asia/Shanghai"))
@@ -128,7 +131,7 @@ public class Client {
 
                 String reply = reader.readUTF();
                 if (reply.equals("File received")) {
-                  File tempFile = new File(workingDir + "/files", tempString[1]);
+                  File tempFile = new File(filesDir, tempString[1]);
                   DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempFile));
 
                   byte[] filebyte = new byte[byteCapacity];
