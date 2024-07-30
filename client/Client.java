@@ -71,63 +71,7 @@ public class Client {
                     tempString = msg.split(" ");
                     command = tempString[0];
 
-                    if ((command.equals("/store"))) { 
-                        try {
-                            File tempFile = new File(workingDir+"/files",tempString[1]);
-                            if (tempFile.isFile()) {
-                                msg = command + " " + (tempString[1]);
-                                String timeStamp = ZonedDateTime.now(ZoneId.of( "Asia/Shanghai")).format(DateTimeFormatter.ofPattern( "uuuu-MM-dd.HH.mm.ss"));
-                                msg += " " + timeStamp;
-                                writer.writeUTF(msg);
-
-                                DataInputStream dis = new DataInputStream(new FileInputStream(tempFile));
-                                
-                                byte[] filebyte = new byte[byteCapacity];
-                                int file = dis.read(filebyte, 0, filebyte.length);
-                                writer.write(filebyte, 0, file);                                
-		
-                                System.out.println(clientName + "<" + timeStamp + ">" + ": Uploaded " + tempString[1]);
-                                dis.close();
-                            } else {
-                                System.out.println("Error: File not found.");
-                            }
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                           System.out.println("Error: Command parameters do not match or is not allowed.");
-                        }
-
-                    } else if (command.equals("/get")) { 
-                        try {                      
-                            msg = command + " " + tempString[1];
-                            writer.writeUTF(msg);
-
-                            String reply = reader.readUTF();
-                            if (reply.equals("File received")) {
-                                File tempFile = new File(workingDir+"/files",tempString[1]);
-                                DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempFile));
-
-                                byte[] filebyte = new byte[byteCapacity];
-                                int file = reader.read(filebyte, 0, filebyte.length);
-                                dos.write(filebyte, 0, file);     
-                                writer.writeUTF("File '" + tempString[1] + "' sent successfully"); 
-                                System.out.println("File received form Server: " + tempString[1]);
-                                dos.close();
-                            } else {
-                                System.out.println("Error: File not found in the server.");
-                            }             
-                        } catch (ArrayIndexOutOfBoundsException e)  {
-                            System.out.println("Please enter file path of file");
-                        }
-                    } else if (command.equals("/leave")) {
-                        break;
-
-                    } else if (command.equals("/dir")) {
-                        msg = "/dir";
-                        writer.writeUTF(msg);
-                        System.out.println("Server Directory");
-                        System.out.println(reader.readUTF());
-                        
-
-                    } else if (command.equals("/register")) {
+                    if (command.equals("/register")) {
                         try {
                             String username = tempString[1];
                             msg = command + " " + username;
@@ -140,16 +84,79 @@ public class Client {
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.out.println("Error: Command parameters do not match or is not allowed."); 
                         }
-                        
-
-                    } else if (command.equals("/?")) {
-                        msg = "/?";
-                        writer.writeUTF(msg);
-                        System.out.println(reader.readUTF());
-
-                    } else {
+                    } else if (command.equals("/?") && clientName == null) {
+                        System.out.println("/register <handle> \n/leave");
+                    } else if (command.equals("/leave")) {
+                        break;
+                    } else if (clientName == null){
                         System.out.println("Error: Command not found.");
-                    }
+                    } else {
+                    
+                        if ((command.equals("/store"))) { 
+                            try {
+                                File tempFile = new File(workingDir+"/files",tempString[1]);
+                                if (tempFile.isFile()) {
+                                    msg = command + " " + (tempString[1]);
+                                    String timeStamp = ZonedDateTime.now(ZoneId.of( "Asia/Shanghai")).format(DateTimeFormatter.ofPattern( "uuuu-MM-dd.HH.mm.ss"));
+                                    msg += " " + timeStamp;
+                                    writer.writeUTF(msg);
+
+                                    DataInputStream dis = new DataInputStream(new FileInputStream(tempFile));
+                                    
+                                    byte[] filebyte = new byte[byteCapacity];
+                                    int file = dis.read(filebyte, 0, filebyte.length);
+                                    writer.write(filebyte, 0, file);                                
+            
+                                    System.out.println(clientName + "<" + timeStamp + ">" + ": Uploaded " + tempString[1]);
+                                    dis.close();
+                                } else {
+                                    System.out.println("Error: File not found.");
+                                }
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                            System.out.println("Error: Command parameters do not match or is not allowed.");
+                            }
+
+                        } else if (command.equals("/get")) { 
+                            try {                      
+                                msg = command + " " + tempString[1];
+                                writer.writeUTF(msg);
+
+                                String reply = reader.readUTF();
+                                if (reply.equals("File received")) {
+                                    File tempFile = new File(workingDir+"/files",tempString[1]);
+                                    DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempFile));
+
+                                    byte[] filebyte = new byte[byteCapacity];
+                                    int file = reader.read(filebyte, 0, filebyte.length);
+                                    dos.write(filebyte, 0, file);     
+                                    writer.writeUTF("File '" + tempString[1] + "' sent successfully"); 
+                                    System.out.println("File received form Server: " + tempString[1]);
+                                    dos.close();
+                                } else {
+                                    System.out.println("Error: File not found in the server.");
+                                }             
+                            } catch (ArrayIndexOutOfBoundsException e)  {
+                                System.out.println("Please enter file path of file");
+                            }
+                        } else if (command.equals("/leave")) {
+                            break;
+
+                        } else if (command.equals("/dir")) {
+                            msg = "/dir";
+                            writer.writeUTF(msg);
+                            System.out.println("Server Directory");
+                            System.out.println(reader.readUTF());
+                            
+                        } else if (command.equals("/?")) {
+                            msg = "/?";
+                            writer.writeUTF(msg);
+                            System.out.println(reader.readUTF());
+    
+                        } else {
+                            System.out.println("Error: Command not found.");
+                        }
+                    } 
+                  
                 }
     
                 writer.writeUTF("END");

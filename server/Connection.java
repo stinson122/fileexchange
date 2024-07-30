@@ -60,7 +60,7 @@ public class Connection extends Thread {
                             dis.close();
                         } else {
                             writer.writeUTF("Error: File not found in the server");
-                            System.out.println("Error: File not found in the server");
+                            //System.out.println("Error: File not found in the server");
                         }
                     } else if (command.equals("/register")){
                         String username = tempString[1];
@@ -68,16 +68,14 @@ public class Connection extends Thread {
                             if(username != null){
                                 if (users.contains(username)) {
                                     writer.writeUTF("Error: Registration failed. Handle or alias already exists.");
-                                    System.out.println("Error: Registration failed. Handle or alias already exists.");
+                                    
                                 } else {
                                     users.add(username);
                                     writer.writeUTF("Welcome " + username + "!");
-                                    System.out.println("Welcome " + username + "!");
                                 }
                                 
                             } else if (tempString.length < 2) {
                                 writer.writeUTF("Error: Command not found.");
-                                System.out.println("Error: Command not found.");
                             }
                         }
                     }
@@ -97,7 +95,7 @@ public class Connection extends Thread {
                             writer.writeUTF(fileNames);
                         }
                     } else if (command.equals("/?")) {
-                        String commands = "/join <server_ip_address> <port> \n/leave \n/register <handle> \n/store <filename> \n/dir \n/get <filename>";
+                        String commands = "/leave \n/store <filename> \n/dir \n/get <filename>";
                         writer.writeUTF(commands);
                     }
                 }                
