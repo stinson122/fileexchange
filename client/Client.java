@@ -72,21 +72,27 @@ public class Client {
                     command = tempString[0];
 
                     if (command.equals("/register")) {
-                        try {
-                            String username = tempString[1];
-                            msg = command + " " + username;
-                            writer.writeUTF(msg);
-                            String response = reader.readUTF();
-                            System.out.println(response);
-                           if(response.startsWith("Welcome")) {
-                                clientName = username;
+                        if(clientName == null){
+                            try {
+                                String username = tempString[1];
+                                msg = command + " " + username;
+                                writer.writeUTF(msg);
+                                String response = reader.readUTF();
+                                System.out.println(response);
+                            if(response.startsWith("Welcome")) {
+                                    clientName = username;
+                                }
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                System.out.println("Error: Command parameters do not match or is not allowed."); 
                             }
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                            System.out.println("Error: Command parameters do not match or is not allowed."); 
+                        } else {
+                            System.out.println("Error: Command not found.");
                         }
                     } else if (command.equals("/?") && clientName == null) {
                         System.out.println("/register <handle> \n/leave");
                     } else if (command.equals("/leave")) {
+                        msg = command + " " + clientName;
+                        writer.writeUTF(msg);
                         break;
                     } else if (clientName == null){
                         System.out.println("Error: Command not found.");

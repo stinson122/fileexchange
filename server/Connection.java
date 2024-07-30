@@ -78,6 +78,10 @@ public class Connection extends Thread {
                                 writer.writeUTF("Error: Command not found.");
                             }
                         }
+                    } else if (command.equals("/leave")){
+                        String username = tempString[1];
+                        users.remove(username);
+                        break;
                     }
                 } catch (ArrayIndexOutOfBoundsException e) { // if a command without parameters is given, i.e. /dir and /?, this exception occurs at line 29 when trying to get a parameter, so the no parameter commands go here
                     String command = tempString[0];
