@@ -32,7 +32,7 @@ public class Connection extends Thread {
           // System.out.println(filepath);
 
           if (command.equals("/store")) {
-            System.out.println("User <" + tempString[2] + "> is sending file.");
+            System.out.println(tempString[3] + "<" + tempString[2] + "> is sending file.");
             System.out.println("FILENAME: " + parameter);
             File tempFile = new File(workingDir + "/files", tempString[1]);
             DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempFile));
@@ -106,10 +106,10 @@ public class Connection extends Thread {
       }
 
       s.close();
-
     } catch (Exception e) {
       e.printStackTrace(); // uncomment for debugging
     } finally {
+
       System.out.println("Server: Client " + s.getRemoteSocketAddress() + " has disconnected");
     }
   }

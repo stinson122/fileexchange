@@ -105,11 +105,10 @@ public class Client {
                       
             if ((command.equals("/store"))) { 
               try {
-                File tempFile = new File(workingDir+"/files",tempString[1]);
+                File tempFile = new File(filesDir,tempString[1]);
                 if (tempFile.isFile()) {
-                  msg = command + " " + (tempString[1]);
                   String timeStamp = ZonedDateTime.now(ZoneId.of( "Asia/Shanghai")).format(DateTimeFormatter.ofPattern( "uuuu-MM-dd.HH.mm.ss"));
-                  msg += " " + timeStamp;
+                  msg = command + " " + (tempString[1]) + " " + timeStamp + " " + clientName;
                   writer.writeUTF(msg);
 
                   DataInputStream dis = new DataInputStream(new FileInputStream(tempFile));
@@ -134,13 +133,13 @@ public class Client {
 
                 String reply = reader.readUTF();
                 if (reply.equals("File received")) {
-                  File tempFile = new File(workingDir+"/files",tempString[1]);
+                  File tempFile = new File(filesDir,tempString[1]);
                   DataOutputStream dos = new DataOutputStream(new FileOutputStream(tempFile));
 
                   byte[] filebyte = new byte[byteCapacity];
                   int file = reader.read(filebyte, 0, filebyte.length);
                   dos.write(filebyte, 0, file);     
-                  writer.writeUTF("File '" + tempString[1] + "' sent successfully"); 
+                  writer.writeUTF("File '" + tempString[1] + "' sent successfully to " + clientName); 
                   System.out.println("File received form Server: " + tempString[1]);
                   dos.close();
                 } else {
@@ -158,8 +157,6 @@ public class Client {
               String directory = reader.readUTF();
               System.out.println("Server Directory");
               System.out.println(directory);
-              System.out.println(reader.readUTF());
-
                                 
             } else if (command.equals("/?")) {
               msg = "/?";
@@ -172,8 +169,6 @@ public class Client {
           }
         }
     
-          writer.writeUTF("END");
-
           sc.close();
           endpoint.close();
         } catch (SocketException e) {
