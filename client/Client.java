@@ -84,6 +84,8 @@ public class Client {
                 System.out.println(response);
                 if(response.startsWith("Welcome")) {
                   clientName = username;
+                  filesDir = workingDir + "/" + clientName + "/files";
+                  new File(filesDir).mkdirs();
                 }
               } catch (ArrayIndexOutOfBoundsException e) {
                 System.out.println("Error: Command parameters do not match or is not allowed."); 
@@ -153,8 +155,11 @@ public class Client {
             } else if (command.equals("/dir")) {
               msg = "/dir";
               writer.writeUTF(msg);
+              String directory = reader.readUTF();
               System.out.println("Server Directory");
+              System.out.println(directory);
               System.out.println(reader.readUTF());
+
                                 
             } else if (command.equals("/?")) {
               msg = "/?";
