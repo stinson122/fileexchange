@@ -54,14 +54,6 @@ public class Connection extends Thread {
               int file = dis.read(filebyte, 0, filebyte.length);
               writer.write(filebyte, 0, file);
 
-            if (tempFile.isFile()) {
-              writer.writeUTF("File received");
-              DataInputStream dis = new DataInputStream(new FileInputStream(tempFile));
-
-              byte[] filebyte = new byte[byteCapacity];
-              int file = dis.read(filebyte, 0, filebyte.length);
-              writer.write(filebyte, 0, file);
-
               System.out.println(reader.readUTF());
               dis.close();
             } else {
@@ -84,55 +76,10 @@ public class Connection extends Thread {
                 writer.writeUTF("Error: Command not found.");
               }
             }
-                    } else if (command.equals("/leave")){
-                        String username = tempString[1];
-                        users.remove(username);
-                        break;
-          }
-        } catch (ArrayIndexOutOfBoundsException e) { // if a command without parameters is given, i.e. /dir and /?, this
-                                                     // exception occurs at line 29 when trying to get a parameter, so
-                                                     // the no parameter commands go here
-          String command = tempString[0];
-
-                    if (command.equals("/dir")) {
-                        File directoryPath = new File(workingDir+"/files");
-                        File[] files =  directoryPath.listFiles();
-                        if (files == null) {
-                            writer.writeUTF("No files found in directory");
-                        } else {
-                            String fileNames = "";
-                            for (int i=0;i<files.length;i++) { 
-                                fileNames += files[i].getName()+"\n";
-                              } 
-                            writer.writeUTF(fileNames);
-                        }
-                    } else if (command.equals("/?")) {
-                        String commands = "/leave \n/store <filename> \n/dir \n/get <filename>";
-                        writer.writeUTF(commands);
-                    }
-                }                
-              System.out.println(reader.readUTF());
-              dis.close();
-            } else {
-              writer.writeUTF("Error: File not found in the server");
-              // System.out.println("Error: File not found in the server");
-            }
-          } else if (command.equals("/register")) {
+          } else if (command.equals("/leave")){
             String username = tempString[1];
-            synchronized (users) {
-              if (username != null) {
-                if (users.contains(username)) {
-                  writer.writeUTF("Error: Registration failed. Handle or alias already exists.");
-
-                } else {
-                  users.add(username);
-                  writer.writeUTF("Welcome " + username + "!");
-                }
-
-              } else if (tempString.length < 2) {
-                writer.writeUTF("Error: Command not found.");
-              }
-            }
+            users.remove(username);
+            break;
           }
         } catch (ArrayIndexOutOfBoundsException e) { // if a command without parameters is given, i.e. /dir and /?, this
                                                      // exception occurs at line 29 when trying to get a parameter, so
@@ -140,22 +87,22 @@ public class Connection extends Thread {
           String command = tempString[0];
 
           if (command.equals("/dir")) {
-            File directoryPath = new File(workingDir + "/files");
-            File[] files = directoryPath.listFiles();
+            File directoryPath = new File(workingDir+"/files");
+            File[] files =  directoryPath.listFiles();
             if (files == null) {
               writer.writeUTF("No files found in directory");
             } else {
               String fileNames = "";
-              for (int i = 0; i < files.length; i++) {
-                fileNames += files[i].getName() + "\n";
-              }
+              for (int i=0;i<files.length;i++) { 
+                fileNames += files[i].getName()+"\n";
+              } 
               writer.writeUTF(fileNames);
             }
           } else if (command.equals("/?")) {
             String commands = "/leave \n/store <filename> \n/dir \n/get <filename>";
             writer.writeUTF(commands);
           }
-        }
+        }           
       }
 
       s.close();
@@ -167,3 +114,4 @@ public class Connection extends Thread {
     }
   }
 }
+
